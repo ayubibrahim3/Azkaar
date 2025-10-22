@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayub Zikr App</title>
+  <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .app-title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-family: 'Amiri', serif;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-container {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 5px solid #00b894;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .text-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .text-container:last-child {
+            margin-bottom: 0;
+        }
+
+        .text-title {
+            color: #00b894;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-family: 'Amiri', serif;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .arabic-text {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-family: 'Amiri', serif;
+            line-height: 1.8;
+            text-align: justify;
+            direction: rtl;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .counter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .counter-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .countdown-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            font-family: 'Amiri', serif;
+        }
+
+        .countdown-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ff5252, #d63031);
+        }
+
+        .countdown-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .countdown-btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .reset-btn {
+            background: #74b9ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #0984e3;
+            transform: translateY(-1px);
+        }
+
+        .success-message {
+            color: #00b894;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+            font-family: 'Amiri', serif;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hidden {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 184, 148, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 20px;
+            animation: bounce 2s infinite;
+            z-index: 1000;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(-50%); }
+            40% { transform: translateY(-60%); }
+            60% { transform: translateY(-40%); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .arabic-text {
+                font-size: 18px;
+            }
+            
+            .scroll-indicator {
+                display: none;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="scroll-indicator">
+   ↓
+  </div>
+  <div class="container">
+   <h1 class="app-title">التسبيح والأذكار الإسلامية</h1><!-- Text 1: Ayat al-Kursi -->
+   <div class="text-container" id="text-0">
+    <div class="text-title">
+     آية الكرسي
+    </div>
+    <div class="arabic-text">
+     أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ. اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-0">1</span> من 1</span> <button class="countdown-btn" id="btn-0" onclick="countdown(0)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(0)">إعادة تعيين</button>
+    <div class="success-message" id="success-0">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 2: Al-Ikhlas -->
+   <div class="text-container" id="text-1">
+    <div class="text-title">
+     سورة الإخلاص
+    </div>
+    <div class="arabic-text">
+     قُلْ هُوَ اللَّـهُ أَحَدٌ، اللَّـهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-1">3</span> من 3</span> <button class="countdown-btn" id="btn-1" onclick="countdown(1)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(1)">إعادة تعيين</button>
+    <div class="success-message" id="success-1">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 3: Al-Falaq -->
+   <div class="text-container" id="text-2">
+    <div class="text-title">
+     سورة الفلق
+    </div>
+    <div class="arabic-text">
+     قُلْ أَعُوذُ بِرَ‌بِّ الْفَلَقِ، مِن شَرِّ‌ مَا خَلَقَ، وَمِن شَرِّ‌ غَاسِقٍ إِذَا وَقَبَ، وَمِن شَرِّ‌ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِن شَرِّ‌ حَاسِدٍ إِذَا حَسَدَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-2">3</span> من 3</span> <button class="countdown-btn" id="btn-2" onclick="countdown(2)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(2)">إعادة تعيين</button>
+    <div class="success-message" id="success-2">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 4: An-Nas -->
+   <div class="text-container" id="text-3">
+    <div class="text-title">
+     سورة الناس
+    </div>
+    <div class="arabic-text">
+     قُلْ أَعُوذُ بِرَ‌بِّ النَّاسِ، مَلِكِ النَّاسِ، إِلَـٰهِ النَّاسِ، مِن شَرِّ‌ الْوَسْوَاسِ الْخَنَّاسِ، الَّذِي يُوَسْوِسُ فِي صُدُورِ‌ النَّاسِ، مِنَ الْجِنَّةِ وَالنَّاسِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-3">3</span> من 3</span> <button class="countdown-btn" id="btn-3" onclick="countdown(3)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(3)">إعادة تعيين</button>
+    <div class="success-message" id="success-3">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 5: Morning/Evening Dua -->
+   <div class="text-container" id="text-4">
+    <div class="text-title">
+     دعاء الصباح والمساء
+    </div>
+    <div class="arabic-text">
+     أَصْبَحْنَا وَأَصْبَحَ (اَمْسَيْنَا وَاَمْسَ) الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِيْ هَذَا الْيَوْمِ (اللَّيْلَةِ) وَخَيْرَ مَا بَعْدَهُ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ (اللَّيْلَةِ) وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوْذُ بِكَ مِنَ الْكَسَلِ، وَسُوءِ الْكِبَرِ، رَبِّ أَعُوْذُ بِكَ مِنْ عَذَابٍ فِيْ النَّارِ وَعَذَابٍ فِيْ الْقَبْرِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-4">1</span> من 1</span> <button class="countdown-btn" id="btn-4" onclick="countdown(4)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(4)">إعادة تعيين</button>
+    <div class="success-message" id="success-4">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 6: Evening Dua -->
+   <div class="text-container" id="text-5">
+    <div class="text-title">
+     دعاء المساء
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ بِكَ أَصْبَحْنَا (أَمْسَـينا)، وَبِكَ أَمْسَيْنَا (أَصْبَحْنَا)، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-5">1</span> من 1</span> <button class="countdown-btn" id="btn-5" onclick="countdown(5)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(5)">إعادة تعيين</button>
+    <div class="success-message" id="success-5">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 7: Sayyid al-Istighfar -->
+   <div class="text-container" id="text-6">
+    <div class="text-title">
+     سيد الاستغفار
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ أَنْتَ رَبِّي لَّا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِر لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-6">1</span> من 1</span> <button class="countdown-btn" id="btn-6" onclick="countdown(6)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(6)">إعادة تعيين</button>
+    <div class="success-message" id="success-6">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 8: Shahada -->
+   <div class="text-container" id="text-7">
+    <div class="text-title">
+     الشهادة
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ إِنِّي أَصْبَحْتُ (اَمْسَيْتُ) أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّداً عَبْدُكَ وَرَسُولُكَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-7">4</span> من 4</span> <button class="countdown-btn" id="btn-7" onclick="countdown(7)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(7)">إعادة تعيين</button>
+    <div class="success-message" id="success-7">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 9: Gratitude -->
+   <div class="text-container" id="text-8">
+    <div class="text-title">
+     الحمد والشكر
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ مَا أَصْبَحَ(أََمْسَ) بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-8">1</span> من 1</span> <button class="countdown-btn" id="btn-8" onclick="countdown(8)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(8)">إعادة تعيين</button>
+    <div class="success-message" id="success-8">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 10: Health Dua -->
+   <div class="text-container" id="text-9">
+    <div class="text-title">
+     دعاء العافية
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ عَافِـني فِي بَدَنِي، اللَّهُمَّ عَافِـنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُبِكَ مِنَ الْكُفْر، وَالفَقْرِ، وَأَعُوذُبِكَ مِنْ عَذَابِ الْقَبْرِ ، لَا إلَهَ إلاَّ أَنْتَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-9">3</span> من 3</span> <button class="countdown-btn" id="btn-9" onclick="countdown(9)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(9)">إعادة تعيين</button>
+    <div class="success-message" id="success-9">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 11: Hasbi Allah -->
+   <div class="text-container" id="text-10">
+    <div class="text-title">
+     حسبي الله
+    </div>
+    <div class="arabic-text">
+     حَسْبِيَ اللَّهُ لَآ إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-10">7</span> من 7</span> <button class="countdown-btn" id="btn-10" onclick="countdown(10)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(10)">إعادة تعيين</button>
+    <div class="success-message" id="success-10">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 12: Dua for Forgiveness and Safety -->
+   <div class="text-container" id="text-11">
+    <div class="text-title">
+     العفو والعافية
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي، وَدُنْيَايَ، وَأَهْلِي، وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-11">1</span> من 1</span> <button class="countdown-btn" id="btn-11" onclick="countdown(11)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(11)">إعادة تعيين</button>
+    <div class="success-message" id="success-11">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 13: Knower of the Unseen -->
+   <div class="text-container" id="text-12">
+    <div class="text-title">
+     عالم الغيب
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّماوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءاً أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-12">1</span> من 1</span> <button class="countdown-btn" id="btn-12" onclick="countdown(12)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(12)">إعادة تعيين</button>
+    <div class="success-message" id="success-12">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 14: Bismillah Protection -->
+   <div class="text-container" id="text-13">
+    <div class="text-title">
+     بسم الله
+    </div>
+    <div class="arabic-text">
+     بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الَْأرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-13">1</span> من 1</span> <button class="countdown-btn" id="btn-13" onclick="countdown(13)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(13)">إعادة تعيين</button>
+    <div class="success-message" id="success-13">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 15: Satisfaction with Allah -->
+   <div class="text-container" id="text-14">
+    <div class="text-title">
+     رضيت بالله
+    </div>
+    <div class="arabic-text">
+     رَضِيتُ باللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِيناً، وَبِمُحَمَّدٍ صَلَى اللَّهُ عَلِيهِ وَسَلَّمَ نَبِيَّاً
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-14">3</span> من 3</span> <button class="countdown-btn" id="btn-14" onclick="countdown(14)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(14)">إعادة تعيين</button>
+    <div class="success-message" id="success-14">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 16: Ya Hayyu Ya Qayyum -->
+   <div class="text-container" id="text-15">
+    <div class="text-title">
+     يا حي يا قيوم
+    </div>
+    <div class="arabic-text">
+     يَاحَيُّ، يَا قَيُّومُ، بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-15">1</span> من 1</span> <button class="countdown-btn" id="btn-15" onclick="countdown(15)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(15)">إعادة تعيين</button>
+    <div class="success-message" id="success-15">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 17: Daily Dua -->
+   <div class="text-container" id="text-16">
+    <div class="text-title">
+     دعاء اليوم
+    </div>
+    <div class="arabic-text">
+     أَصْبَحْنَا وَأَصْبَحَ (أَمْسَيْنا وَأَمْسَى) الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّـي أَسْأَلُكَ خَـيْرَ هَذَا الْـيَوْمِ (اللَّـيْلَة)، فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-16">1</span> من 1</span> <button class="countdown-btn" id="btn-16" onclick="countdown(16)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(16)">إعادة تعيين</button>
+    <div class="success-message" id="success-16">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 18: Fitrah of Islam -->
+   <div class="text-container" id="text-17">
+    <div class="text-title">
+     فطرة الإسلام
+    </div>
+    <div class="arabic-text">
+     أَصْبَحْنَا (أَمْسَيْنَا) عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الإِخْلَاصِ، وَعَلَى دِينِ نَبِـيِّنَا مُحَمَّدٍ، وَعَاـَى مِلَّـةِ أَبِينَا إِبْـرَاهِيـمَ، حَنِيفاً مُسْلِماً وَمَا كَانَ مِنَ الْمُشْرِكِينَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-17">1</span> من 1</span> <button class="countdown-btn" id="btn-17" onclick="countdown(17)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(17)">إعادة تعيين</button>
+    <div class="success-message" id="success-17">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 19: SubhanAllah -->
+   <div class="text-container" id="text-18">
+    <div class="text-title">
+     سبحان الله
+    </div>
+    <div class="arabic-text">
+     سُبْحَانَ اللَّهِ وَبِحَمْدِهِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-18">100</span> من 100</span> <button class="countdown-btn" id="btn-18" onclick="countdown(18)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(18)">إعادة تعيين</button>
+    <div class="success-message" id="success-18">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 20: La ilaha illa Allah -->
+   <div class="text-container" id="text-19">
+    <div class="text-title">
+     لا إله إلا الله
+    </div>
+    <div class="arabic-text">
+     لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-19">10</span> من 10</span> <button class="countdown-btn" id="btn-19" onclick="countdown(19)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(19)">إعادة تعيين</button>
+    <div class="success-message" id="success-19">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 21: SubhanAllah al-Azeem -->
+   <div class="text-container" id="text-20">
+    <div class="text-title">
+     سبحان الله العظيم
+    </div>
+    <div class="arabic-text">
+     سُبْحَانَ اللَّهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-20">3</span> من 3</span> <button class="countdown-btn" id="btn-20" onclick="countdown(20)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(20)">إعادة تعيين</button>
+    <div class="success-message" id="success-20">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 22: Dua for Knowledge -->
+   <div class="text-container" id="text-21">
+    <div class="text-title">
+     دعاء العلم
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْماً نَافِعاً، وَ رِزْقاً طَيِّباً، وَ عَمَلاً مُتَقَبَّلاً
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-21">1</span> من 1</span> <button class="countdown-btn" id="btn-21" onclick="countdown(21)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(21)">إعادة تعيين</button>
+    <div class="success-message" id="success-21">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 23: Istighfar -->
+   <div class="text-container" id="text-22">
+    <div class="text-title">
+     الاستغفار
+    </div>
+    <div class="arabic-text">
+     أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-22">100</span> من 100</span> <button class="countdown-btn" id="btn-22" onclick="countdown(22)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(22)">إعادة تعيين</button>
+    <div class="success-message" id="success-22">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 24: A'udhu bi Kalimat Allah -->
+   <div class="text-container" id="text-23">
+    <div class="text-title">
+     أعوذ بكلمات الله
+    </div>
+    <div class="arabic-text">
+     أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-23">3</span> من 3</span> <button class="countdown-btn" id="btn-23" onclick="countdown(23)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(23)">إعادة تعيين</button>
+    <div class="success-message" id="success-23">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div><!-- Text 25: Salawat on Prophet -->
+   <div class="text-container" id="text-24">
+    <div class="text-title">
+     الصلاة على النبي
+    </div>
+    <div class="arabic-text">
+     اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ
+    </div>
+    <div class="counter-info"><span class="counter-display">المتبقي: <span id="count-24">10</span> من 10</span> <button class="countdown-btn" id="btn-24" onclick="countdown(24)">اضغط للتسبيح</button>
+    </div><button class="reset-btn" onclick="resetCounter(24)">إعادة تعيين</button>
+    <div class="success-message" id="success-24">
+     تم الانتهاء بحمد الله! 🤲
+    </div>
+   </div>
+  </div>
+  <script>
+        // Initialize counters with original values
+        const originalCounts = [1, 3, 3, 3, 1, 1, 1, 4, 1, 3, 7, 1, 1, 1, 3, 1, 1, 1, 100, 10, 3, 1, 100, 3, 10];
+        let currentCounts = [...originalCounts];
+
+        function countdown(index) {
+            const countElement = document.getElementById(`count-${index}`);
+            const button = document.getElementById(`btn-${index}`);
+            const successMsg = document.getElementById(`success-${index}`);
+            
+            if (currentCounts[index] > 0) {
+                currentCounts[index]--;
+                countElement.textContent = currentCounts[index];
+                
+                if (currentCounts[index] > 0) {
+                    // Add shake animation
+                    button.style.animation = 'shake 0.3s ease-in-out';
+                    setTimeout(() => {
+                        button.style.animation = '';
+                    }, 300);
+                } else {
+                    // Completed - show success message
+                    button.disabled = true;
+                    button.textContent = 'تم الانتهاء';
+                    button.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        successMsg.classList.add('show');
+                    }, 300);
+                }
+            }
+        }
+
+        function resetCounter(index) {
+            currentCounts[index] = originalCounts[index];
+            
+            const countElement = document.getElementById(`count-${index}`);
+            const button = document.getElementById(`btn-${index}`);
+            const successMsg = document.getElementById(`success-${index}`);
+            
+            countElement.textContent = currentCounts[index];
+            button.disabled = false;
+            button.textContent = 'اضغط للتسبيح';
+            button.classList.remove('hidden');
+            successMsg.classList.remove('show');
+        }
+
+        // Hide scroll indicator after user starts scrolling
+        let hasScrolled = false;
+        window.addEventListener('scroll', function() {
+            if (!hasScrolled) {
+                document.querySelector('.scroll-indicator').style.display = 'none';
+                hasScrolled = true;
+            }
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99281426d1ae981d',t:'MTc2MTEyNjUwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
